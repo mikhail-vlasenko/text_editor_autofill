@@ -123,7 +123,6 @@ class Notepad:
         self.__thisTextArea.config(yscrollcommand=self.__thisScrollBar.set)
 
     def __quitApplication(self):
-        print(self.__thisTextArea)
         self.__root.destroy()
 
     # exit()
@@ -202,14 +201,20 @@ class Notepad:
         text = self.__thisTextArea.get(1.0, END)
         print(text)
         sentence = ''
+        iter1 = 0
         for i in range(len(text) - 1, 0, -1):
             if text[i] == '.':
-                sentence = text[i+2:]
+                sentence = text[i+2:-1]
                 print(sentence)
-        if sentence == "He said":
-            print(get_cont(sentence, 3, 100, 0.01, False))
-        else:
-            print("lol")
+                iter1 = i+2
+                break
+        cur = self.__thisTextArea.index(INSERT)
+        print("cursor = " + str(cur))
+        line_c, col_c = map(int, str(cur).split('.'))
+        new_sent = get_cont(sentence, 3, 100, 0.01)
+        print(new_sent)
+        self.__thisTextArea.delete('{}.{}'.format(line_c, col_c - len(sentence)), END)
+        self.__thisTextArea.insert(END, new_sent)
 
     # ---------------
 
