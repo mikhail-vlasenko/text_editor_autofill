@@ -2,9 +2,16 @@ import markovify
 
 # Get raw text as string.
 with open("data/The-Fountainhead_dataset.txt") as f:
-    text = f.read()
+    f_text = f.read()
 
-text_model = markovify.Text(text, state_size=3)
+fountainhead = markovify.Text(f_text, state_size=3)
+
+with open("data/the_catcher_in_the_rye.txt") as f:
+    c_text = f.read()
+
+catcher = markovify.Text(c_text, state_size=3)
+
+text_model = markovify.combine([fountainhead, catcher])
 
 
 def get_cont(sent, max_w_cont, num_tries=10, max_coef=0.1, silent=True):
