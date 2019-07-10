@@ -90,6 +90,12 @@ class Notepad:
 
         self.__thisEditMenu.add_command(label="Predict", command=self.predict)
 
+        self.p_button = Button(self.__root, text="Predict", command=self.predict)
+
+        self.__thisTextArea.configure(undo=True, autoseparators=True, maxundo=-1)
+
+        self.undo_button = Button(self.__root, text="Undo", command=self.undo)
+
         # ----------
 
         # To give a feature of cut
@@ -197,6 +203,9 @@ class Notepad:
 
     # ---------------
 
+    def undo(self):
+        self.__thisTextArea.edit_undo()
+
     def predict(self):
         text = self.__thisTextArea.get(1.0, END)
         print(text)
@@ -221,6 +230,8 @@ class Notepad:
     def run(self):
 
         # Run main application
+        self.p_button.grid()
+        self.undo_button.grid()
         self.__root.mainloop()
 
     # Run main application
