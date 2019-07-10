@@ -208,20 +208,30 @@ class Notepad:
 
     def predict(self):
         text = self.__thisTextArea.get(1.0, END)
-        print(text)
+        print('text: {}'.format(text))
         sentence = ''
-        iter1 = 0
-        for i in range(len(text) - 1, 0, -1):
+        for i in range(len(text) - 2, -1, -1):
             if text[i] == '.':
                 sentence = text[i+2:-1]
-                print(sentence)
-                iter1 = i+2
                 break
+            if i == 0:
+                sentence = text[:-1]
+                break
+
+        if len(sentence.split()) > 3:
+            whole_sentence = sentence
+            sentence = sentence.split()[-3:]
+            sentence = ' '.join(sentence)
+        sentence = sentence.capitalize()
+        print('sentence: {}'.format(sentence))
+        new_sent = get_cont(sentence, 3, 50, 0.1)
+        if new_sent == -1:
+            print()
+            return
+        print(new_sent)
         cur = self.__thisTextArea.index(INSERT)
         print("cursor = " + str(cur))
         line_c, col_c = map(int, str(cur).split('.'))
-        new_sent = get_cont(sentence, 3, 100, 0.01)
-        print(new_sent)
         self.__thisTextArea.delete('{}.{}'.format(line_c, col_c - len(sentence)), END)
         self.__thisTextArea.insert(END, new_sent)
 

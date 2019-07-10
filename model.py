@@ -30,6 +30,10 @@ def get_cont(sent, max_w_cont, num_tries=10, max_coef=0.1, silent=True):
                     print("cnt = " + str(cnt))
                 res = sep.join(res.split()[:len(sent.split()) + max_w_cont])
         else:
-            res = text_model.make_sentence_with_start(beginning=sent, max_words=len(sent.split()) + max_w_cont)
+            try:
+                res = text_model.make_sentence_with_start(beginning=sent, max_words=len(sent.split()) + max_w_cont)
+            except KeyError:
+                print('Can\'t continue')
+                return -1
         cnt += 1
     return res
