@@ -12,12 +12,19 @@ with open("data/the_catcher_in_the_rye.txt") as f:
 
 catcher = markovify.Text(c_text, state_size=3)
 
+'''
 with open("data/data_from_OANC/merged-file.txt") as f:
     biomed_text = f.read()
 
 biomed = markovify.Text(biomed_text, state_size=3)
+'''
 
-text_model = markovify.combine([fountainhead, catcher, biomed], [1, 1, 0.5])
+with open("data/letters_OANC/merged-file.txt") as f:
+    letters_text = f.read()
+
+letters = markovify.Text(letters_text, state_size=3)
+
+text_model = markovify.combine([fountainhead, catcher, letters], [1, 1, 1])
 
 model_json = text_model.to_json()
 

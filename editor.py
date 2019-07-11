@@ -90,11 +90,11 @@ class Notepad:
 
         self.__thisEditMenu.add_command(label="Predict", command=self.predict)
 
-        self.p_button = Button(self.__root, text="Predict", command=self.predict)
-
         self.__thisTextArea.configure(undo=True, autoseparators=True, maxundo=-1)
-
+        self.p_button = Button(self.__root, text="Predict", command=self.predict)
         self.undo_button = Button(self.__root, text="Undo", command=self.undo)
+
+        self.__root.bind("<Return>", self.enter_pressed)
 
         # ----------
 
@@ -238,7 +238,7 @@ class Notepad:
 
         sentence = sentence.capitalize()
         print('sentence: {}'.format(sentence))
-        new_sent = get_cont(sentence, 3, 10, 0.5)
+        new_sent = get_cont(sentence, 3, 2, 0.5)
         if new_sent == -1:
             print()
             return
@@ -252,6 +252,15 @@ class Notepad:
         line_c, col_c = map(int, str(cur).split('.'))
         self.__thisTextArea.delete('{}.{}'.format(line_c, col_c - len(sentence)), END)
         self.__thisTextArea.insert(END, new_sent)
+
+    def enter_pressed(self, event):
+        text = self.__thisTextArea.get(1.0, END)
+        if text[-3] == '.':
+            return
+        cur = self.__thisTextArea.index(INSERT)
+        line_c, col_c = map(int, str(cur).split('.'))
+        self.__thisTextArea.delete('{}.{}'.format(line_c, col_c), END)
+        self.predict()
 
     # ---------------
 
