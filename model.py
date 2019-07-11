@@ -1,17 +1,10 @@
 import markovify
+import json
 
-# Get raw text as string.
-with open("data/The-Fountainhead_dataset.txt") as f:
-    f_text = f.read()
+with open('data.json', 'r') as f:
+    json_model = json.load(f)
 
-fountainhead = markovify.Text(f_text, state_size=3)
-
-with open("data/the_catcher_in_the_rye.txt") as f:
-    c_text = f.read()
-
-catcher = markovify.Text(c_text, state_size=3)
-
-text_model = markovify.combine([fountainhead, catcher])
+text_model = markovify.Text.from_json(json_model)
 
 
 def get_cont(sent, max_w_cont, num_tries=10, max_coef=0.1, silent=True):
@@ -20,9 +13,9 @@ def get_cont(sent, max_w_cont, num_tries=10, max_coef=0.1, silent=True):
     sep = ' '
     while not res:
         if cnt > num_tries:
-            res = text_model.make_sentence_with_start(beginning=sent, max_words=len(sent.split()) +
-                                                                                int(max_w_cont * max_coef * (
-                                                                                            cnt - num_tries)))
+            res = text_model.make_sentence_with_start(beginning=sent,
+                                                      max_words=len(sent.split()) + int(max_w_cont * max_coef * (cnt - num_tries)),
+                                                      strict=False)
             if res:
                 if not silent:
                     print(res)

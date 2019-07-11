@@ -206,8 +206,19 @@ class Notepad:
     def undo(self):
         self.__thisTextArea.edit_undo()
 
+    def beautify(self, s):
+        for i in range(len(s)):
+            if s[i] == '.' and s[i+1] != ' ':
+                s = s[:i+1] + ' ' + s[i+1:]
+                if i+2 < len(s):
+                    if i+3 < len(s):
+                        s = s[:i+2] + s[i+2].upper() + s[i+3:]
+                    else:
+                        s = s[:i + 2] + s[i + 2].upper()
+        return s
+
     def predict(self):
-        text = self.__thisTextArea.get(1.0, END)
+        text = self.beautify(self.__thisTextArea.get(1.0, END))
         print('text: {}'.format(text))
         sentence = ''
         for i in range(len(text) - 2, -1, -1):
@@ -218,16 +229,23 @@ class Notepad:
                 sentence = text[:-1]
                 break
 
+        not_start = False
         if len(sentence.split()) > 3:
             whole_sentence = sentence
             sentence = sentence.split()[-3:]
             sentence = ' '.join(sentence)
+            not_start = True
+
         sentence = sentence.capitalize()
         print('sentence: {}'.format(sentence))
-        new_sent = get_cont(sentence, 3, 50, 0.1)
+        new_sent = get_cont(sentence, 3, 10, 0.5)
         if new_sent == -1:
             print()
             return
+
+        if not_start:
+            new_sent = new_sent[0].lower() + new_sent[1:]
+
         print(new_sent)
         cur = self.__thisTextArea.index(INSERT)
         print("cursor = " + str(cur))
@@ -238,13 +256,9 @@ class Notepad:
     # ---------------
 
     def run(self):
-
-        # Run main application
         self.p_button.grid()
         self.undo_button.grid()
         self.__root.mainloop()
-
-    # Run main application
 
 
 notepad = Notepad(width=600, height=400)
