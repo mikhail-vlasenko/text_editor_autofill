@@ -223,12 +223,12 @@ class Notepad:
                         s = s[:i + 2] + s[i + 2].upper()
         return s
 
-    def predict(self):
+    def predict(self, only2words=False):
         text = self.beautify(self.__thisTextArea.get(1.0, END))
         print('text: {}'.format(text))
         sentence = ''
         for i in range(len(text) - 2, -1, -1):
-            if text[i] == '.':
+            if text[i] == '.' or text[i] == '?' or text[i] == '!':
                 sentence = text[i+2:-1]
                 break
             if i == 0:
@@ -236,9 +236,10 @@ class Notepad:
                 break
 
         not_start = False
-        if len(sentence.split()) > 3:
+        sent_len = 2 if only2words else 3
+        if len(sentence.split()) > sent_len:
             whole_sentence = sentence
-            sentence = sentence.split()[-3:]
+            sentence = sentence.split()[-sent_len:]
             sentence = ' '.join(sentence)
             not_start = True
 
@@ -246,11 +247,14 @@ class Notepad:
         print('sentence: {}'.format(sentence))
         new_sent = get_cont(sentence, 3, 2, 0.5)
         if new_sent == -1:
-            self.__thisStatusBar.configure(text='--Can\'t continue--')
-            print()
+            if not only2words:
+                self.predict(True)
+            else:
+                self.__thisStatusBar.configure(text='--Can\'t continue--')
+                print()
             return
 
-        if not_start and new_sent[0] != 'I':
+        if not_start and not (new_sent[0] == 'I' and new_sent[1] == ' '):
             new_sent = new_sent[0].lower() + new_sent[1:]
 
         print(new_sent)
