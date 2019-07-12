@@ -13,13 +13,14 @@ class Notepad:
     __thisWidth = 300
     __thisHeight = 300
     __thisTextArea = Text(__root)
+    __thisStatusBar = Label(__root)
     __thisMenuBar = Menu(__root)
     __thisFileMenu = Menu(__thisMenuBar, tearoff=0)
     __thisEditMenu = Menu(__thisMenuBar, tearoff=0)
     __thisHelpMenu = Menu(__thisMenuBar, tearoff=0)
 
     # To add scrollbar
-    __thisScrollBar = Scrollbar(__thisTextArea)
+    # __thisScrollBar = Scrollbar(__thisTextArea)
     __file = None
 
     def __init__(self, **kwargs):
@@ -65,7 +66,7 @@ class Notepad:
         self.__root.grid_columnconfigure(0, weight=1)
 
         # Add controls (widget)
-        self.__thisTextArea.grid(sticky=N + E + S + W)
+        self.__thisTextArea.grid(row=0, column=0, columnspan=3, sticky=N + E + S + W)
 
         # To open new file
         self.__thisFileMenu.add_command(label="New",
@@ -93,8 +94,13 @@ class Notepad:
         self.__thisTextArea.configure(undo=True, autoseparators=True, maxundo=-1)
         self.p_button = Button(self.__root, text="Predict", command=self.predict)
         self.undo_button = Button(self.__root, text="Undo", command=self.undo)
+        self.p_button.grid(row=2, column=1)
+        self.undo_button.grid(row=2, column=2)
 
         self.__root.bind("<Return>", self.enter_pressed)
+
+        self.__thisStatusBar.configure(bd=0, relief=SUNKEN, anchor=W, text="Status bar")
+        self.__thisStatusBar.grid(row=2, column=0, sticky=W)
 
         # ----------
 
@@ -122,11 +128,11 @@ class Notepad:
 
         self.__root.config(menu=self.__thisMenuBar)
 
-        self.__thisScrollBar.pack(side=RIGHT, fill=Y)
+        # self.__thisScrollBar.pack(side=RIGHT, fill=Y)
 
         # Scrollbar will adjust automatically according to the content
-        self.__thisScrollBar.config(command=self.__thisTextArea.yview)
-        self.__thisTextArea.config(yscrollcommand=self.__thisScrollBar.set)
+        # self.__thisScrollBar.config(command=self.__thisTextArea.yview)
+        # self.__thisTextArea.config(yscrollcommand=self.__thisScrollBar.set)
 
     def __quitApplication(self):
         self.__root.destroy()
@@ -240,10 +246,11 @@ class Notepad:
         print('sentence: {}'.format(sentence))
         new_sent = get_cont(sentence, 3, 2, 0.5)
         if new_sent == -1:
+            self.__thisStatusBar.configure(text='--Can\'t continue--')
             print()
             return
 
-        if not_start:
+        if not_start and new_sent[0] != 'I':
             new_sent = new_sent[0].lower() + new_sent[1:]
 
         print(new_sent)
@@ -252,6 +259,7 @@ class Notepad:
         line_c, col_c = map(int, str(cur).split('.'))
         self.__thisTextArea.delete('{}.{}'.format(line_c, col_c - len(sentence)), END)
         self.__thisTextArea.insert(END, new_sent)
+        self.__thisStatusBar.configure(text=new_sent)
 
     def enter_pressed(self, event):
         text = self.__thisTextArea.get(1.0, END)
@@ -265,8 +273,6 @@ class Notepad:
     # ---------------
 
     def run(self):
-        self.p_button.grid()
-        self.undo_button.grid()
         self.__root.mainloop()
 
 
