@@ -24,7 +24,16 @@ with open("data/letters_OANC/merged-file.txt") as f:
 
 letters = markovify.Text(letters_text, state_size=3)
 
-text_model = markovify.combine([fountainhead, catcher, letters], [1, 1, 1])
+with open("data/corp.txt") as f:
+    corp_text = ''
+    for line in f.readlines():
+        if len(line) > 10:
+            line = line[6:-5]
+            corp_text += line
+
+corp = markovify.Text(letters_text, state_size=3)
+
+text_model = markovify.combine([fountainhead, catcher, letters, corp], [1, 1, 1, 0.2])
 
 model_json = text_model.to_json()
 

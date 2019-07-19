@@ -15,7 +15,7 @@ def get_cont(sent, max_w_cont, num_tries=10, max_coef=0.1, silent=True):
         if cnt > num_tries:
             res = text_model.make_sentence_with_start(beginning=sent,
                                                       max_words=len(sent.split()) + int(max_w_cont * max_coef * (cnt - num_tries)),
-                                                      strict=True)
+                                                      strict=False)
             if res:
                 if not silent:
                     print(res)
@@ -29,7 +29,7 @@ def get_cont(sent, max_w_cont, num_tries=10, max_coef=0.1, silent=True):
             try:
                 res = text_model.make_sentence_with_start(beginning=sent,
                                                           max_words=len(sent.split()) + max_w_cont,
-                                                          strict=True)
+                                                          strict=False)
             except KeyError:
                 print('Can\'t continue')
                 return -1

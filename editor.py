@@ -1,5 +1,6 @@
 import tkinter
 import os
+import re
 from tkinter import *
 from tkinter.messagebox import *
 from tkinter.filedialog import *
@@ -174,10 +175,12 @@ class Notepad:
 
         if self.__file == None:
             # Save as new file
+            print('not here')
             self.__file = asksaveasfilename(initialfile='Untitled.txt',
                                             defaultextension=".txt",
                                             filetypes=[("All Files", "*.*"),
                                                        ("Text Documents", "*.txt")])
+            print('here')
 
             if self.__file == "":
                 self.__file = None
@@ -221,6 +224,7 @@ class Notepad:
                         s = s[:i+2] + s[i+2].upper() + s[i+3:]
                     else:
                         s = s[:i + 2] + s[i + 2].upper()
+        s = re.sub(r'\bi\b', 'I', s)
         return s
 
     def predict(self, only2words=False):
@@ -236,14 +240,17 @@ class Notepad:
                 break
 
         not_start = False
-        sent_len = 2 if only2words else 3
-        if len(sentence.split()) > sent_len:
+        if only2words:
+            sent_len = 2
+        else:
+            sent_len = 3
+        print('sent len = {}'.format(sent_len))
+        if len(sentence.split()) >= sent_len:
             whole_sentence = sentence
             sentence = sentence.split()[-sent_len:]
             sentence = ' '.join(sentence)
             not_start = True
 
-        sentence = sentence.capitalize()
         print('sentence: {}'.format(sentence))
         new_sent = get_cont(sentence, 3, 2, 0.5)
         if new_sent == -1:
@@ -256,6 +263,9 @@ class Notepad:
 
         if not_start and not (new_sent[0] == 'I' and new_sent[1] == ' '):
             new_sent = new_sent[0].lower() + new_sent[1:]
+
+        if not not_start:
+            new_sent = new_sent[0].upper() + new_sent[1:]
 
         print(new_sent)
         cur = self.__thisTextArea.index(INSERT)
