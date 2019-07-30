@@ -33,7 +33,12 @@ with open("data/corp.txt") as f:
 
 corp = markovify.Text(letters_text, state_size=3)
 
-text_model = markovify.combine([fountainhead, catcher, letters, corp], [1, 1, 1, 0.2])
+with open("data/reddit_comments.txt") as f:
+    reddit_text = f.read()
+
+reddit = markovify.Text(reddit_text, state_size=3)
+
+text_model = markovify.combine([fountainhead, catcher, letters, reddit, corp], [1, 1, 1, 1, 0.1])
 
 model_json = text_model.to_json()
 
