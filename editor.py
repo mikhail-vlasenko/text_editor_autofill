@@ -172,8 +172,7 @@ class Notepad:
         self.__thisTextArea.delete(1.0, END)
 
     def __saveFile(self):
-
-        if self.__file == None:
+        if self.__file is None:
             # Save as new file
             print('not here')
             self.__file = asksaveasfilename(initialfile='Untitled.txt',
@@ -193,7 +192,6 @@ class Notepad:
 
                 # Change the window title
                 self.__root.title(os.path.basename(self.__file) + " - not Notepad")
-
 
         else:
             file = open(self.__file, "w")
@@ -231,9 +229,14 @@ class Notepad:
         text = self.beautify(self.__thisTextArea.get(1.0, END))
         print('text: {}'.format(text))
         sentence = ''
+        new_line = False
         for i in range(len(text) - 2, -1, -1):
             if text[i] == '.' or text[i] == '?' or text[i] == '!':
-                sentence = text[i+2:-1]
+                sentence = text[i + 2:-1]
+                break
+            if text[i] == '\n':
+                sentence = text[i + 1:-1]
+                new_line = True
                 break
             if i == 0:
                 sentence = text[:-1]
@@ -252,10 +255,10 @@ class Notepad:
             not_start = True
 
         print('sentence: {}'.format(sentence))
-        new_sent = get_cont(sentence, 3, 2, 0.5)
+        new_sent = get_cont(sentence, 3, 2, 0.5, max_tries=6, strict=False)
         if new_sent == -1:
             if not only2words:
-                self.predict(True)
+                self.predict(only2words=True)
             else:
                 self.__thisStatusBar.configure(text='--Can\'t continue--')
                 print()
@@ -272,8 +275,11 @@ class Notepad:
         print("cursor = " + str(cur))
         line_c, col_c = map(int, str(cur).split('.'))
         self.__thisTextArea.delete('{}.{}'.format(line_c, col_c - len(sentence)), END)
+        if new_line and not not_start:
+            new_sent = '\n' + new_sent
         self.__thisTextArea.insert(END, new_sent)
         self.__thisStatusBar.configure(text=new_sent)
+        print('------------')
 
     def enter_pressed(self, event):
         text = self.__thisTextArea.get(1.0, END)
