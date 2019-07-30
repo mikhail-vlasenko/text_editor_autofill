@@ -7,7 +7,7 @@ with open('data.json', 'r') as f:
 text_model = markovify.Text.from_json(json_model)
 
 
-def get_cont(sent, max_w_cont, num_tries=10, max_coef=0.1, max_tries =10, silent=True, strict=True):
+def get_cont(sent, max_w_cont, num_tries=10, max_coef=0.1, max_tries=10, silent=True, strict=True):
     res = None
     cnt = 0
     sep = ' '

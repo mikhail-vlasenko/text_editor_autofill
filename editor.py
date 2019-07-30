@@ -19,6 +19,7 @@ class Notepad:
     __thisFileMenu = Menu(__thisMenuBar, tearoff=0)
     __thisEditMenu = Menu(__thisMenuBar, tearoff=0)
     __thisHelpMenu = Menu(__thisMenuBar, tearoff=0)
+    __thisTextSize = Entry(__root)
 
     # To add scrollbar
     # __thisScrollBar = Scrollbar(__thisTextArea)
@@ -67,7 +68,7 @@ class Notepad:
         self.__root.grid_columnconfigure(0, weight=1)
 
         # Add controls (widget)
-        self.__thisTextArea.grid(row=0, column=0, columnspan=3, sticky=N + E + S + W)
+        self.__thisTextArea.grid(row=0, column=0, columnspan=4, sticky=N + E + S + W)
 
         # To open new file
         self.__thisFileMenu.add_command(label="New",
@@ -93,12 +94,18 @@ class Notepad:
         self.__thisEditMenu.add_command(label="Predict", command=self.predict)
 
         self.__thisTextArea.configure(undo=True, autoseparators=True, maxundo=-1)
+        self.__thisTextArea.config(font=("Open Sans", 14))
+
         self.p_button = Button(self.__root, text="Predict", command=self.predict)
         self.undo_button = Button(self.__root, text="Undo", command=self.undo)
-        self.p_button.grid(row=2, column=1)
-        self.undo_button.grid(row=2, column=2)
+        self.p_button.grid(row=2, column=2)
+        self.undo_button.grid(row=2, column=3)
+        self.__thisTextSize.grid(row=2, column=1)
 
         self.__root.bind("<Return>", self.enter_pressed)
+        self.__thisTextSize.bind("<Return>", self.change_font)
+        self.__thisTextSize.configure(width=5)
+        self.__thisTextSize.insert(END, '14')
 
         self.__thisStatusBar.configure(bd=0, relief=SUNKEN, anchor=W, text="Status bar")
         self.__thisStatusBar.grid(row=2, column=0, sticky=W)
@@ -255,7 +262,7 @@ class Notepad:
             not_start = True
 
         print('sentence: {}'.format(sentence))
-        new_sent = get_cont(sentence, 3, 2, 0.5, max_tries=6, strict=False)
+        new_sent = get_cont(sentence, 3, num_tries=2, max_coef=1, max_tries=4, strict=False)
         if new_sent == -1:
             if not only2words:
                 self.predict(only2words=True)
@@ -289,6 +296,14 @@ class Notepad:
         line_c, col_c = map(int, str(cur).split('.'))
         self.__thisTextArea.delete('{}.{}'.format(line_c, col_c), END)
         self.predict()
+
+    def change_font(self, event):
+        try:
+            size = int(self.__thisTextSize.get())
+        except ValueError:
+            self.__thisStatusBar.configure(text='--Enter a natural number--')
+            return
+        self.__thisTextArea.config(font=("Open Sans", size))
 
     # ---------------
 
